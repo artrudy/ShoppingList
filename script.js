@@ -1,16 +1,20 @@
 const itemForm = document.getElementById('item-form');
 const itemInput = document.getElementById('item-input');
 const itemList = document.getElementById('item-list');
+const clearBtn = document.getElementById('clear');
+const itemFilter = document.getElementById('filter')
 
-const addItem = (e) => {
+function addItem(e){
     e.preventDefault();
+
     const newItem = itemInput.value;
 
 //validate input
-    if(newItem === ''){
+    if (newItem === ''){
         alert('Please add an item');
-        return
+        return;
     }
+
 
 //Create list item
     const li = document.createElement('li');
@@ -18,7 +22,13 @@ const addItem = (e) => {
 
     const button = createButton('remove-item btn-link text-red');
     li.appendChild(button);
+
+
+    //Add li to the DOM
     itemList.appendChild(li);
+
+    checkUI();
+
     itemInput.value = '';
 }
 
@@ -36,6 +46,62 @@ function createIcon (classes){
     return icon;
 }
 
+function removeItem(e){    
+    if (e.target.parentElement.classList.contains('remove-item')){
+        if (confirm('Are your sure?')){
+            e.target.parentElement.parentElement.remove();
+        }
+    }
+    checkUI();
+}
+
+
+function clearItems(){
+    itemList.innerHTML = ''
+    // while(itemList.firstChild){
+    //     itemList.replaceChild(itemList.firstChild);
+    // }
+    checkUI();
+}
+
+function filterItems(e){
+    const items = itemList.querySelectorAll('li')
+    const text = e.target.value.toLowerCase();
+
+    items.forEach((item) => {
+        const itemName = item.firstChild.textContent.toLowerCase();
+
+        if(itemName.indexOf(text) != -1){
+            item.style.display =  'flex'
+        } else {
+            item.style.display = 'none'
+        }
+
+        console.log(itemName)
+    })
+
+
+}
+
+function checkUI(){
+    const items = itemList.querySelectorAll('li');
+
+    if (items.length === 0){
+        clearBtn.style.display = 'none';
+        itemFilter.style.display = 'none';
+    } else {
+        clearBtn.style.display = 'block';
+        itemFilter.style.display = 'block';
+
+    }
+}
+
 //Event listener
 
 itemForm.addEventListener('submit', addItem);
+itemList.addEventListener('click', addItem);
+clearBtn.addEventListener('click', clearItems);
+itemFilter.addEventListener('input', filterItems);
+
+
+checkUI();
